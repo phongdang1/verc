@@ -1,9 +1,25 @@
-const express = require('express')
+const express = require("express");
+const db = require("./db"); // Kết nối đến cơ sở dữ liệu
+const app = express();
+const PORT = 5000;
 
-const app = express()
+// Middleware để parse JSON
+app.use(express.json());
 
-app.use("/", (req, res)=>{
-    res.send("server is running");
-})
+// Route để lấy dữ liệu người dùng
+app.get("/api/users", (req, res) => {
+  const query = "SELECT * FROM User";
 
-app.listen(5000, console.log("Server started on PORT 5000"));
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Lỗi khi lấy dữ liệu:", err);
+      return res.status(500).json({ error: "Có lỗi xảy ra" });
+    }
+    res.json(results); // Trả về dữ liệu người dùng
+  });
+});
+
+// Khởi động máy chủ
+app.listen(PORT, () => {
+  console.log(`Máy chủ đang chạy trên cổng ${PORT}`);
+});
